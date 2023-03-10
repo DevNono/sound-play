@@ -16,6 +16,9 @@ const windowPlayCommand = (path, volume) =>
     path,
   )} $player.Volume = ${volume}; ${playAudio} ${stopAudio}`
 
+/* LINUX PLAY COMMAND */
+const linuxPlayCommand = (path, volume) =>  `play \"${path}\" vol ${volume}`
+
 module.exports = {
   play: async (path, volume=0.5) => {
     /**
@@ -23,10 +26,10 @@ module.exports = {
      * Mac: afplay's volume is from 0 to 255, default is 1. However, volume > 2 usually result in distortion.
      * Therefore, it is better to limit the volume on Mac, and set a common scale of 0 to 1 for simplicity
      */
-    const volumeAdjustedByOS = process.platform === 'darwin' ? Math.min(2, volume * 2) : volume
+    const volumeAdjustedByOS = (process.platform === 'darwin' || process.platform == 'linux') ? Math.min(2, volume * 2) : volume
 
     const playCommand =
-      process.platform === 'darwin' ? macPlayCommand(path, volumeAdjustedByOS) : windowPlayCommand(path, volumeAdjustedByOS)
+      process.platform === 'linux' ? linuxPlayCommand(path, volumeAdjustedByOS) : (process.platform === 'darwin' ? macPlayCommand(path, volumeAdjustedByOS) : windowPlayCommand(path, volumeAdjustedByOS))
     try {
       await execPromise(playCommand, {windowsHide: true})
     } catch (err) {
