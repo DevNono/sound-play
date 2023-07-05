@@ -5,16 +5,12 @@ const execPromise = require('util').promisify(exec)
 const macPlayCommand = (path, volume) => `afplay \"${path}\" -v ${volume}`
 
 /* WINDOW PLAY COMMANDS */
-const addPresentationCore = `Add-Type -AssemblyName presentationCore;`
-const createMediaPlayer = `$player = New-Object system.windows.media.mediaplayer;`
-const loadAudioFile = path => `$player.open('${path}');`
-const playAudio = `$player.Play();`
-const stopAudio = `Start-Sleep 1; Start-Sleep -s $player.NaturalDuration.TimeSpan.TotalSeconds;Exit;`
+const createMediaPlayer = path => `$player = New-Object Media.SoundPlayer "${path}";`
+const playAudio = `$player.PlaySync();`
+const stopAudio = `Exit;`
 
 const windowPlayCommand = (path, volume) =>
-  `powershell -c ${addPresentationCore} ${createMediaPlayer} ${loadAudioFile(
-    path,
-  )} $player.Volume = ${volume}; ${playAudio} ${stopAudio}`
+  `powershell -c ${createMediaPlayer(path,)} $player.Volume = ${volume}; ${playAudio} ${stopAudio}`
 
 /* LINUX PLAY COMMAND */
 const linuxPlayCommand = (path, volume) =>  `play \"${path}\" vol ${volume}`
