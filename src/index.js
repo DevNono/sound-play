@@ -10,7 +10,7 @@ const playAudio = `$player.PlaySync();`
 const stopAudio = `Exit;`
 
 const windowPlayCommand = (path, volume) =>
-  `powershell -c ${createMediaPlayer(path,)} $player.Volume = ${volume}; ${playAudio} ${stopAudio}`
+  `powershell -c ${createMediaPlayer(path,)} ${playAudio} ${stopAudio}`
 
 /* LINUX PLAY COMMAND */
 const linuxPlayCommand = (path, volume) =>  `play \"${path}\" vol ${volume}`
@@ -27,7 +27,7 @@ module.exports = {
     const playCommand =
       process.platform === 'linux' ? linuxPlayCommand(path, volumeAdjustedByOS) : (process.platform === 'darwin' ? macPlayCommand(path, volumeAdjustedByOS) : windowPlayCommand(path, volumeAdjustedByOS))
     try {
-      await execPromise(playCommand, {windowsHide: true})
+      return await execPromise(playCommand, {windowsHide: true});
     } catch (err) {
       throw err
     }
